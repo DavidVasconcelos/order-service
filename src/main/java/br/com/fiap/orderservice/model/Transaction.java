@@ -16,7 +16,7 @@ public class Transaction {
 
     private Long id;
 
-    private Integer cardNumber;
+    private String cardNumber;
 
     private String expiration;
 

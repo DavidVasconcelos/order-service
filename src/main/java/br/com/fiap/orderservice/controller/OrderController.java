@@ -11,11 +11,11 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
+@RequestMapping("/orders")
 public class OrderController {
 
     @Autowired
     private OrderRepository repository;
-
 
     @GetMapping("/{id}")
     public ResponseEntity<Order> findById(@PathVariable("id") Long id){
