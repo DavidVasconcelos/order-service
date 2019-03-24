@@ -8,6 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
 
 @Slf4j
 @RestController
@@ -18,7 +22,7 @@ public class OrderController {
     private OrderRepository repository;
 
     @GetMapping("/{id}")
-    public ResponseEntity<Order> findById(@PathVariable("id") Long id){
+    public ResponseEntity<Order> findById(@PathVariable("id") Long id) {
 
         final Order order = repository.getById(id);
 
@@ -26,35 +30,38 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<Order> save(@RequestBody Order order){
+    public ResponseEntity<Order> save(@RequestBody Order order) {
 
-        repository.save(order);
+        final Order savedOrder = repository.save(order);
 
-        return new ResponseEntity(HttpStatus.OK);
+        URI location = getUri(savedOrder);
+
+        return ResponseEntity.created(location).build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Order> update(@PathVariable("id") Long id, @RequestBody Order order){
+    public ResponseEntity<Order> update(@PathVariable("id") Long id, @RequestBody Order order) {
 
-        final Order savedOrder = repository.getById(id);
-
-        repository.delete(savedOrder);
-
-        BeanUtils.copyProperties(order, savedOrder);
-
-        repository.save(savedOrder);
+        repository.update(id, order);
 
         return new ResponseEntity(HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Order> delete(@PathVariable("id") Long id){
+    public ResponseEntity<Order> delete(@PathVariable("id") Long id) {
 
         final Order savedOrder = repository.getById(id);
 
         repository.delete(savedOrder);
 
         return new ResponseEntity(HttpStatus.OK);
+    }
+
+    private URI getUri(Order savedOrder) {
+        return ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(savedOrder.getId()).toUri();
     }
 
 }

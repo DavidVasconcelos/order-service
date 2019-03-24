@@ -18,7 +18,7 @@ public class Transaction {
 
     private String cardNumber;
 
-    private String expiration;
+    private String expirationDate;
 
     private Brand brand;
 

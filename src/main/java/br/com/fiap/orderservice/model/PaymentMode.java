@@ -1,6 +1,6 @@
 package br.com.fiap.orderservice.model;
 
-public enum Payment {
+public enum PaymentMode {
 
     CREDIT_CARD,
     PAYPAL;
