@@ -1,5 +1,6 @@
 package br.com.fiap.orderservice.repository;
 
+import br.com.fiap.orderservice.exception.OrderNotFoundException;
 import br.com.fiap.orderservice.model.Item;
 import br.com.fiap.orderservice.model.Order;
 import org.springframework.beans.BeanUtils;
@@ -9,9 +10,10 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
-public class OrderRepository {
+public class OrderRepository  {
 
     private static List<Order> orders = new ArrayList<>();
 
@@ -19,7 +21,9 @@ public class OrderRepository {
 
     public Order getById(Long id) {
 
-        final Order savedOrder = orders.stream().filter(order -> order.getId() == id).findFirst().get();
+        final Optional<Order> optionalOrder = orders.stream().filter(order -> order.getId() == id).findFirst();
+
+        final Order savedOrder = optionalOrder.orElseThrow(() -> new OrderNotFoundException("Pedido não encontrado"));
 
         savedOrder.setTotalPrice(savedOrder.getItems()
                 .stream()

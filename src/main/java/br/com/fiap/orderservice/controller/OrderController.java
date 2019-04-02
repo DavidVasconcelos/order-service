@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.validation.Valid;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 
@@ -30,7 +31,7 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<Order> save(@RequestBody Order order) {
+    public ResponseEntity<Order> save(@Valid @RequestBody Order order) {
 
         final Order savedOrder = repository.save(order);
 
@@ -40,7 +41,7 @@ public class OrderController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Order> update(@PathVariable("id") Long id, @RequestBody Order order) {
+    public ResponseEntity<Order> update(@PathVariable("id") Long id, @Valid @RequestBody Order order) {
 
         repository.update(id, order);
 
