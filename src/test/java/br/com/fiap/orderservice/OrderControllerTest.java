@@ -17,7 +17,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -63,12 +62,14 @@ public class OrderControllerTest {
     @Test
     public void insertOrder() throws Exception {
         final Order order = getOrder();
-        when(this.repository.getById(1L)).thenReturn(Optional.empty());
+        when(this.repository.getById(1L)).thenReturn(new Order());
+
         ObjectMapper mapper = new ObjectMapper();
         mapper.findAndRegisterModules();
         String jsonInString = mapper.writeValueAsString(order);
+
         mvc.perform(post("/orders")
-                .accept(MediaType.APPLICATION_JSON))
+                .accept(MediaType.APPLICATION_JSON)
                 .content(jsonInString))
                 .andExpect(status().isCreated());
     }
