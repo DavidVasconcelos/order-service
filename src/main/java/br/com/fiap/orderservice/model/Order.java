@@ -34,7 +34,7 @@ public class Order {
 
     private PaymentMode paymentMode;
 
-    @JsonFormat(pattern = "MM/dd/yyyy",
+    @JsonFormat(pattern = "MM/dd/yyyy HH:mm:ss.SSS",
             shape = JsonFormat.Shape.STRING,
             locale = "pt-BR",
             timezone = "Brazil/East")

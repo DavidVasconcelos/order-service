@@ -5,12 +5,15 @@ import br.com.fiap.orderservice.model.*;
 import br.com.fiap.orderservice.repository.OrderRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -35,6 +38,11 @@ public class OrderControllerTest {
     @MockBean
     private OrderRepository repository;
 
+    @Before
+    public void setUp(){
+        MockitoAnnotations.initMocks(this);
+    }
+
     @Test
     public void notFoundOrder() throws Exception {
         final String id = "1";
@@ -58,7 +66,6 @@ public class OrderControllerTest {
     }
 
 
-
     @Test
     public void insertOrder() throws Exception {
         final Order order = getOrder();
@@ -68,9 +75,14 @@ public class OrderControllerTest {
         mapper.findAndRegisterModules();
         String jsonInString = mapper.writeValueAsString(order);
 
+        order.setId(null);
+        order.setTotalPrice(null);
+        order.setOrderDate(null);
+
         mvc.perform(post("/orders")
-                .accept(MediaType.APPLICATION_JSON)
-                .content(jsonInString))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonInString)
+                .characterEncoding("utf-8"))
                 .andExpect(status().isCreated());
     }
 
@@ -78,10 +90,16 @@ public class OrderControllerTest {
     private Order getOrder() {
         final Transaction transaction = new Transaction(1165454646464645654L,
                 "5488888888887192", "12/23", Brand.VISA);
-        final Item item = new Item("Item 1", new BigDecimal(10.13), 2);
+        final Item item = new Item("Item 1", new BigDecimal(10.13).setScale(2, BigDecimal.ROUND_HALF_UP), 2);
         final List<Item> itens = Stream.of(item).collect(Collectors.toList());
-        return new Order(1L, "Name", "email@teste.com.br", "Rua 1", itens,
-                new BigDecimal(10.13), PaymentMode.CREDIT_CARD, Calendar.getInstance().getTime(), Status.COMPLETED,
+        return new Order(1L,
+                "Name",
+                "email@teste.com.br",
+                "Rua 1",
+                itens,
+                new BigDecimal(10.13).setScale(2, BigDecimal.ROUND_HALF_UP),
+                PaymentMode.CREDIT_CARD, Calendar.getInstance().getTime(),
+                Status.COMPLETED,
                 transaction);
     }
 
